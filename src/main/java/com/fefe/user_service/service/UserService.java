@@ -2,7 +2,7 @@ package com.fefe.user_service.service;
 
 import com.fefe.user_service.exception.EmailAlreadyExistsException;
 import com.fefe.user_service.exception.UserNotFoundException;
-import com.fefe.user_service.model.CreateUserRequest;
+import com.fefe.user_service.model.CreateOrUpdateUserRequest;
 import com.fefe.user_service.model.CreateUserResponse;
 import com.fefe.user_service.model.User;
 import com.fefe.user_service.repository.UserRepository;
@@ -29,7 +29,7 @@ public class UserService {
 
 
     @Transactional
-    public CreateUserResponse createUser(CreateUserRequest request){
+    public CreateUserResponse createUser(CreateOrUpdateUserRequest request){
         String lowerCaseEmail = request.getEmail().toLowerCase();
         if(userRepository.existsByEmail(lowerCaseEmail)){
             throw new EmailAlreadyExistsException(lowerCaseEmail);
@@ -45,5 +45,29 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
         return userMapper.userToCreateUserResponse(user);
+    }
+
+    @Transactional
+    public CreateUserResponse updateUser(CreateOrUpdateUserRequest request, Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(id));
+
+        String lowerCaseEmail = request.getEmail().toLowerCase();
+        if(!user.getEmail().equalsIgnoreCase(lowerCaseEmail) && userRepository.existsByEmail(lowerCaseEmail)){
+            throw new EmailAlreadyExistsException(lowerCaseEmail);
+        }
+
+        updateUserFields(request, user);
+
+        User saved = userRepository.save(user);
+        return userMapper.userToCreateUserResponse(saved);
+    }
+
+    private static void updateUserFields(CreateOrUpdateUserRequest request, User user) {
+        user.setName(request.getName());
+        user.setSurname(request.getSurname());
+        user.setEmail(request.getEmail().toLowerCase());
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setMarketingAccepted(request.getMarketingAccepted());
     }
 }

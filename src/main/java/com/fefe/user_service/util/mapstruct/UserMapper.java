@@ -1,6 +1,6 @@
 package com.fefe.user_service.util.mapstruct;
 
-import com.fefe.user_service.model.CreateUserRequest;
+import com.fefe.user_service.model.CreateOrUpdateUserRequest;
 import com.fefe.user_service.model.CreateUserResponse;
 import com.fefe.user_service.model.User;
 import org.mapstruct.Mapper;
@@ -13,7 +13,7 @@ public interface UserMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "loyaltyCardNumber", ignore = true)
     @Mapping(target = "email", expression = "java(request.getEmail() != null ? request.getEmail().toLowerCase() : null)")
-    User createUserRequestToUser(CreateUserRequest request);
+    User createUserRequestToUser(CreateOrUpdateUserRequest request);
 
     CreateUserResponse userToCreateUserResponse(User user);
 }

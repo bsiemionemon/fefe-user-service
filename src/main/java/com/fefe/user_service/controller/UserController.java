@@ -1,6 +1,6 @@
 package com.fefe.user_service.controller;
 
-import com.fefe.user_service.model.CreateUserRequest;
+import com.fefe.user_service.model.CreateOrUpdateUserRequest;
 import com.fefe.user_service.model.CreateUserResponse;
 import com.fefe.user_service.service.UserService;
 import jakarta.validation.Valid;
@@ -28,16 +28,23 @@ public class UserController {
                     : ResponseEntity.ok(users);
     }
 
-    @PostMapping
-    public ResponseEntity<CreateUserResponse> createUser(
-            @Valid @RequestBody CreateUserRequest request) {
-        CreateUserResponse user = userService.createUser(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(user);
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<CreateUserResponse> getUser(@PathVariable Long id) {
         CreateUserResponse user = userService.getUser(id);
         return ResponseEntity.ok(user);
+    }
+
+    @PostMapping
+    public ResponseEntity<CreateUserResponse> createUser(
+            @Valid @RequestBody CreateOrUpdateUserRequest request) {
+        CreateUserResponse user = userService.createUser(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<CreateUserResponse> updateUser(
+            @Valid @RequestBody CreateOrUpdateUserRequest request, @PathVariable Long id) {
+        CreateUserResponse user = userService.updateUser(request, id);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 }
