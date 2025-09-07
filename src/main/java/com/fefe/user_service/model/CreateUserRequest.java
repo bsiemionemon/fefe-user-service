@@ -32,9 +32,6 @@ public class CreateUserRequest {
     @Pattern(regexp = "^\\+?[1-9]\\d{7,14}$",
             message = "Phone number must be valid international format")
     private String phoneNumber;
-
-    private Long loyaltyCardNumber;
-
     @NotNull(message = "Marketing acceptance status is required")
     private Boolean marketingAccepted;
 }

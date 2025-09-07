@@ -1,7 +1,7 @@
 package com.fefe.user_service.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
+        import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -11,45 +11,32 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 50)
-    private String name;
-
-    @Column(nullable = false, length = 50)
-    private String surname;
-
-    @Column(nullable = false, unique = true, length = 320)
+    @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(length = 15)
+    private String name;
+    private String surname;
+
+    @Column(name = "phone_number")
     private String phoneNumber;
 
+    @Column(name = "loyalty_card_number", insertable = false,  updatable = false)
     private Long loyaltyCardNumber;
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "marketing_accepted", nullable = false)
+    private Boolean marketingAccepted;
+
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
-
-    @Column(nullable = false)
-    private boolean marketingAccepted;
-
-    // ===== WALIDACJA DOMENOWA (BIZNESOWA) =====
-//    public void validateBusinessRules() {
-//        if (name == null || name.trim().isEmpty()) {
-//            throw new ValidationException("Name cannot be empty");
-//        }
-//        if (email == null || !isValidEmail(email)) {
-//            throw new ValidationException("Email is invalid");
-//        }
-//        // inne reguły biznesowe...
-//    }
 
     @PrePersist
     @PreUpdate
     private void validateBeforePersist() {
-//        validateBusinessRules();
         if (createdAt == null) {
             createdAt = LocalDateTime.now();
         }

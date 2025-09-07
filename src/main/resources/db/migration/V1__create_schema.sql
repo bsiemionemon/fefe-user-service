@@ -1,0 +1,17 @@
+CREATE SEQUENCE loyalty_card_seq
+    START WITH 100001
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+CREATE TABLE users (
+    id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    email VARCHAR(320) NOT NULL UNIQUE,
+    name VARCHAR(50),
+    surname VARCHAR(50),
+    phone_number VARCHAR(15),
+    loyalty_card_number BIGINT NOT NULL UNIQUE DEFAULT nextval('loyalty_card_seq'),
+    marketing_accepted BOOLEAN NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
