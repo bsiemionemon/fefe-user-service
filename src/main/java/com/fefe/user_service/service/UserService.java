@@ -1,5 +1,6 @@
 package com.fefe.user_service.service;
 
+import com.fefe.user_service.event.UserRegisteredEvent;
 import com.fefe.user_service.exception.EmailAlreadyExistsException;
 import com.fefe.user_service.exception.UserNotFoundException;
 import com.fefe.user_service.model.CreateOrUpdateUserRequest;
@@ -19,6 +20,7 @@ public class UserService {
 
     private UserRepository userRepository;
     private UserMapper userMapper;
+    private KafkaProducerService kafkaProducerService;
 
     public List<CreateUserResponse> getAllUsers() {
         List<User> users = userRepository.findAll();
@@ -36,8 +38,18 @@ public class UserService {
         }
 
         User user = userMapper.createUserRequestToUser(request);
-
         User saved = userRepository.save(user);
+
+        UserRegisteredEvent event = new UserRegisteredEvent(
+                saved.getId(),
+                saved.getEmail(),
+                saved.getName(),
+                saved.getSurname(),
+                saved.getCreatedAt(),
+                saved.getLoyaltyCardNumber()
+        );
+        kafkaProducerService.publishUserRegistered(event);
+
         return userMapper.userToCreateUserResponse(saved);
     }
 
