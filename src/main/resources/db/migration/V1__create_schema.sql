@@ -11,7 +11,7 @@ CREATE TABLE users (
     name VARCHAR(50),
     surname VARCHAR(50),
     phone_number VARCHAR(15),
-    loyalty_card_number BIGINT NOT NULL UNIQUE DEFAULT nextval('loyalty_card_seq'),
+    loyalty_card_number BIGINT NOT NULL,
     marketing_accepted BOOLEAN NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

@@ -37,9 +37,19 @@ public class UserService {
             throw new EmailAlreadyExistsException(lowerCaseEmail);
         }
 
-        User user = userMapper.createUserRequestToUser(request);
-        User saved = userRepository.save(user);
+        User saved = createAndSaveUser(request);
+        sendUserRegisteredEvent(saved);
 
+        return userMapper.userToCreateUserResponse(saved);
+    }
+
+    private User createAndSaveUser(CreateOrUpdateUserRequest request) {
+        User user = userMapper.createUserRequestToUser(request);
+        user.setLoyaltyCardNumber(userRepository.getNextLoyaltyCardNumber());
+        return userRepository.save(user);
+    }
+
+    private void sendUserRegisteredEvent(User saved) {
         UserRegisteredEvent event = new UserRegisteredEvent(
                 saved.getId(),
                 saved.getEmail(),
@@ -49,8 +59,6 @@ public class UserService {
                 saved.getLoyaltyCardNumber()
         );
         kafkaProducerService.publishUserRegistered(event);
-
-        return userMapper.userToCreateUserResponse(saved);
     }
 
     public CreateUserResponse getUser(Long id) {
@@ -64,15 +72,19 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
 
+        validateEmailUniqueness(request, user);
+
+        updateUserFields(request, user);
+        User saved = userRepository.save(user);
+
+        return userMapper.userToCreateUserResponse(saved);
+    }
+
+    private void validateEmailUniqueness(CreateOrUpdateUserRequest request, User user) {
         String lowerCaseEmail = request.getEmail().toLowerCase();
         if(!user.getEmail().equalsIgnoreCase(lowerCaseEmail) && userRepository.existsByEmail(lowerCaseEmail)){
             throw new EmailAlreadyExistsException(lowerCaseEmail);
         }
-
-        updateUserFields(request, user);
-
-        User saved = userRepository.save(user);
-        return userMapper.userToCreateUserResponse(saved);
     }
 
     private static void updateUserFields(CreateOrUpdateUserRequest request, User user) {

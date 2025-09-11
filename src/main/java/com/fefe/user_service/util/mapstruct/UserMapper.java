@@ -11,7 +11,6 @@ public interface UserMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "loyaltyCardNumber", ignore = true)
     @Mapping(target = "email", expression = "java(request.getEmail() != null ? request.getEmail().toLowerCase() : null)")
     User createUserRequestToUser(CreateOrUpdateUserRequest request);
 

@@ -16,7 +16,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, updatable = false)
     private String email;
 
     private String name;
@@ -25,7 +25,7 @@ public class User {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Column(name = "loyalty_card_number", insertable = false,  updatable = false)
+    @Column(name = "loyalty_card_number")
     private Long loyaltyCardNumber;
 
     @Column(name = "marketing_accepted", nullable = false)
